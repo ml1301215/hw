@@ -26,22 +26,34 @@ SkeletonTree::SkeletonTree()
     }
 }
 
-Animator::Animator(string skel_path, vector<string> mesh_path)
+// In this function, we mainly initialize the skeleton tree and the mesh
+Animator::Animator(const UsdStageRefPtr& stage, string skel_path, vector<string> mesh_path)
 {
     
-    auto stage = pxr::UsdStage::Open(file_name.c_str());
 	// Load the skeleton
-	UsdStageRefPtr stage = UsdStage::Open(skel_path);
-        pxr::UsdSkelCache skelCache;
-        pxr::UsdSkelSkeleton skel(stage->GetPrimAtPath(sdf_path));
-        pxr::UsdSkelSkeletonQuery skelQuery = skelCache.GetSkelQuery(skel);
+	skel_ = UsdSkelSkeleton(stage->GetPrimAtPath(SdfPath(skel_path.c_str())));
+	skelQuery_ = skelCache_.GetSkelQuery(skel_);
 
-    
-    skel_ = UsdSkelSkelton.Get((stage, SdfPath("/Path/To/Skel"));
+	skeleton_tree_ = SkeletonTree();
 
-	UsdSkelRoot skelRoot(stage->GetPrimAtPath(SdfPath("/root")));
-	skelQuery = UsdSkelSkeletonQuery(skelRoot.GetSkeleton());
-	skeleton = SkeletonTree();
+	if (skel_) {
+		for (size_t i = 0; i < skelQuery_.GetJointOrder().size(); ++i) {
+			pxr::SdfPath jointPath(skelQuery_.GetJointOrder()[i]);
+
+			auto joint_name = jointPath.GetName();
+			std::cout << "Name of joint " << i << " is " << jointPath.GetName() << std::endl;
+                        jointPath.GetParentPath();  // get parent
+			skelQuery_.GetTopology().GetParent(i);
+
+			// Add joint to the tree, here we also need to set the parent/child relationship
+			skeleton_tree_.add_joint(joint_name);
+		}
+	}
+	else {
+		std::cout << "No skel" << std::endl;
+	}
+
+
 	// Load the mesh
     for (auto path : mesh_path) {
 		mesh = Mesh(path);

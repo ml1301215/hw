@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
 
 #include <pxr/usd/usdSkel/cache.h>
 #include <pxr/usd/usdSkel/skeleton.h>
@@ -50,6 +51,10 @@ class SkeletonTree
 	// Students should call this function 
 	void compute_world_transforms_for_each_joint(); 
 
+
+	void add_joint(std::string name); 
+
+
     // some transforms here
 
     // some functions to update the skeleton: add joints into the tree, access leaves
@@ -75,7 +80,10 @@ public:
 
 	// Load skeleton and mesh from a usd file 
 	// What if there are multiply meshes for a skel?
-	Animator(string skel_path, vector<string> mesh_path); 
+
+	// This design is not good, but we can fix it later
+	// Animator should not handle the reading of USD stage 
+	Animator(const UsdStageRefPtr& stage, string skel_path, vector<string> mesh_path); 
 
 	// Each timestep, update the skeleton transform,
 	// then apply transform to each vertices of mesh 
