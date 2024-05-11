@@ -38,15 +38,25 @@ void SkeletonTree::compute_world_transforms_for_each_joint()
 }
 
 // In this function, we mainly initialize the skeleton tree and the mesh
-Animator::Animator(const UsdStageRefPtr& stage, string skel_path)
+Animator::Animator(const UsdStageRefPtr& stage, string root_path)
 {
-    
+    UsdPrim skelRootPrim = stage->GetPrimAtPath(SdfPath(root_path.c_str())); 
+	if (!skelRootPrim) {
+        std::cout << "Failed to find SkelRoot prim." << endl;
+        return;
+    }
+	UsdSkelRoot skelRoot(skelRootPrim); // TODO: seems useless? 
+
+
 	// Load the skeleton
+    string skel_path = skelRoot.GetPath().GetString() + "/Skel";
 	skel_ = UsdSkelSkeleton(stage->GetPrimAtPath(SdfPath(skel_path.c_str())));
 
 	skeleton_tree_ = SkeletonTree();
 
 	if (skel_) {
+		std::cout << "Load skel from Path: " << skel_path << std::endl;
+
 		skelQuery_ = skelCache_.GetSkelQuery(skel_);
 
 		for (size_t i = 0; i < skelQuery_.GetJointOrder().size(); ++i) {
@@ -70,20 +80,23 @@ Animator::Animator(const UsdStageRefPtr& stage, string skel_path)
 		}
 	}
 	else {
-		std::cout << "No skel" << std::endl;
+		std::cout << "No skel at Path: " << skel_path << std::endl;
 	}
 
 	// get anim path from stage:
-	auto anim_path = skel_path + "/Anim";
+    auto anim_path = skel_.GetPath().GetString() + "/Anim";
 	auto anim = UsdSkelAnimation(stage->GetPrimAtPath(SdfPath(anim_path.c_str())));
 	if (anim)
 	{
-		std::cout << "Loaded anim." << std::endl;
+		std::cout << "Load anim from Path: " << anim_path << std::endl;
 		UsdSkelAnimQuery animQuery = skelCache_.GetAnimQuery(anim);
 	}
 	else {
 		std::cout << "No anim at Path: " << anim_path << std::endl;
 	}
+
+	// Load the mesh
+    //UsdGeomMesh usdgeom(stage->GetPrimAtPath(sdf_path));
 
 
 

@@ -46,32 +46,14 @@ static void node_exec(ExeParams params)
     }
 
     auto stage = pxr::UsdStage::Open(file_name.c_str());
-
-    Animator anim(stage, prim_path); 
-
     if (stage) {
         // Here 'c_str' call is necessary since prim_path
-        auto sdf_path = pxr::SdfPath(prim_path.c_str());
-
-        pxr::UsdSkelCache skelCache;
-        pxr::UsdSkelSkeleton skel(stage->GetPrimAtPath(sdf_path));
-        pxr::UsdSkelSkeletonQuery skelQuery = skelCache.GetSkelQuery(skel);
-
-        if (skel) {
-           /* for (size_t i = 0; i < skelQuery.GetJointOrder().size(); ++i) {
-                pxr::SdfPath jointPath(skelQuery.GetJointOrder()[i]);
-                std::cout << "Name of joint " << i << " is " << jointPath.GetName() << std::endl;
-            }*/
-        }
-        else {
-            std::cout << "No skel" << std::endl;
-        }
-
-        // TODO: add material reading
+        Animator anim(stage, prim_path); 
     }
     else {
         // TODO: throw something
         std::cout << "No stage" << std::endl;
+        throw std::runtime_error("no stage");
     }
     params.set_output("Geometry", std::move(geometry));
 }

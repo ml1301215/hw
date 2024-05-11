@@ -11,6 +11,7 @@
 #include <pxr/usd/usdSkel/animQuery.h>
 #include <pxr/usd/usdSkel/animation.h>
 #include <pxr/usd/usdSkel/binding.h>
+#include <pxr/usd/usdGeom/mesh.h>
 
 #include <Eigen/Dense>
 
@@ -87,7 +88,7 @@ public:
 
 	// This design is not good, but we can fix it later
 	// Animator should not handle the reading of USD stage 
-	Animator(const UsdStageRefPtr& stage, string skel_path); 
+	Animator(const UsdStageRefPtr& stage, string root_path); 
 
 	// Each timestep, update the skeleton transform,
 	// then apply transform to each vertices of mesh 
