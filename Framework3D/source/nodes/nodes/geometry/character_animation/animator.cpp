@@ -40,12 +40,12 @@ void SkeletonTree::compute_world_transforms_for_each_joint()
 // In this function, we mainly initialize the skeleton tree and the mesh
 Animator::Animator(const UsdStageRefPtr& stage, string root_path)
 {
-    UsdPrim skelRootPrim = stage->GetPrimAtPath(SdfPath(root_path.c_str())); 
-	if (!skelRootPrim) {
+    UsdPrim skel_root_prim = stage->GetPrimAtPath(SdfPath(root_path.c_str())); 
+	if (!skel_root_prim) {
         std::cout << "Failed to find SkelRoot prim." << endl;
         return;
     }
-	UsdSkelRoot skelRoot(skelRootPrim); // TODO: seems useless? 
+	UsdSkelRoot skelRoot(skel_root_prim); // TODO: seems useless? 
 
 
 	// Load the skeleton
@@ -96,7 +96,15 @@ Animator::Animator(const UsdStageRefPtr& stage, string root_path)
 	}
 
 	// Load the mesh
-    //UsdGeomMesh usdgeom(stage->GetPrimAtPath(sdf_path));
+    auto mesh_path = skel_root_prim.GetPath().GetString() + "/Mesh";
+    UsdGeomMesh mesh(stage->GetPrimAtPath(SdfPath(mesh_path.c_str())));
+	if (mesh)
+	{
+		std::cout << "Load mesh from Path: " << mesh_path << std::endl;
+	}
+    else {
+		std::cout << "No mesh at Path: " << mesh_path << std::endl;
+	}
 
 
 
