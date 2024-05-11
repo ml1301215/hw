@@ -8,6 +8,9 @@
 #include <pxr/usd/usdSkel/skeleton.h>
 #include <pxr/usd/usdSkel/skeletonQuery.h>
 #include <pxr/usd/usdSkel/root.h>
+#include <pxr/usd/usdSkel/animQuery.h>
+#include <pxr/usd/usdSkel/animation.h>
+#include <pxr/usd/usdSkel/binding.h>
 
 #include <Eigen/Dense>
 
@@ -15,6 +18,7 @@ namespace USTC_CG::node_character_animation {
 
 using namespace std;
 using namespace Eigen;
+using namespace pxr; 
 
 class Joint
 {
@@ -22,7 +26,7 @@ class Joint
 public:
 	// Need to give a default value for parent 
 	// since root joint may have no parent 
-    Joint(string name, const Joint& parent); 
+    Joint(int idx, string name, int parent_idx); 
 
 	int idx_;
     std::string name_;
@@ -52,7 +56,7 @@ class SkeletonTree
 	void compute_world_transforms_for_each_joint(); 
 
 
-	void add_joint(std::string name); 
+	void add_joint(int idx, std::string name, int parent_idx); 
 
 
     // some transforms here
@@ -64,11 +68,11 @@ class Mesh
 {
    public:
 	 // update each vertex with a transform ? 
-     void update(); 
+     //void update(); 
 
    protected:
 	 MatrixXd vertices_; 
-	 some_type vertices_weight; 
+	 //some_type vertices_weight; 
 	   // vertices, Weights of each joint 
 };
 
@@ -83,7 +87,7 @@ public:
 
 	// This design is not good, but we can fix it later
 	// Animator should not handle the reading of USD stage 
-	Animator(const UsdStageRefPtr& stage, string skel_path, vector<string> mesh_path); 
+	Animator(const UsdStageRefPtr& stage, string skel_path); 
 
 	// Each timestep, update the skeleton transform,
 	// then apply transform to each vertices of mesh 

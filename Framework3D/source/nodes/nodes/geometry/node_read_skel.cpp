@@ -19,7 +19,9 @@
 #include <pxr/usd/usdSkel/skeletonQuery.h>
 #include <pxr/usd/usdSkel/root.h>
 
-namespace USTC_CG::node_read_skel {
+#include "character_animation/animator.h"
+
+namespace USTC_CG::node_character_animation {
 static void node_declare(NodeDeclarationBuilder& b)
 {
     b.add_input<decl::String>("File Name").default_val("Default");
@@ -45,6 +47,8 @@ static void node_exec(ExeParams params)
 
     auto stage = pxr::UsdStage::Open(file_name.c_str());
 
+    Animator anim(stage, prim_path); 
+
     if (stage) {
         // Here 'c_str' call is necessary since prim_path
         auto sdf_path = pxr::SdfPath(prim_path.c_str());
@@ -54,10 +58,10 @@ static void node_exec(ExeParams params)
         pxr::UsdSkelSkeletonQuery skelQuery = skelCache.GetSkelQuery(skel);
 
         if (skel) {
-            for (size_t i = 0; i < skelQuery.GetJointOrder().size(); ++i) {
+           /* for (size_t i = 0; i < skelQuery.GetJointOrder().size(); ++i) {
                 pxr::SdfPath jointPath(skelQuery.GetJointOrder()[i]);
                 std::cout << "Name of joint " << i << " is " << jointPath.GetName() << std::endl;
-            }
+            }*/
         }
         else {
             std::cout << "No skel" << std::endl;
@@ -86,4 +90,4 @@ static void node_register()
 }
 
 NOD_REGISTER_NODE(node_register)
-}  // namespace USTC_CG::node_read_skel
+}  // namespace USTC_CG::node_character_animation
